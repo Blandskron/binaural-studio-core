@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binaural Studio | Enfoque y Calma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #6366f1;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Estilo para Neurodivergentes: Card limpia y predecible */
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-trigger {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .info-trigger:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        .play { background: var(--success); color: #052e16; }
+        .stop { background: var(--danger); color: #450a0a; }
+        .download { 
+            background: var(--info); 
+            color: white; 
+            grid-column: span 2;
+            margin-top: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: left;
+        }
+
+        .modal h2 { color: var(--accent); }
+        .wave-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+        .wave-item b { color: #818cf8; }
+
+        .close-modal {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Binaural Studio</h1>
+            <p>Sincroniza tu mente, mejora tu enfoque.</p>
+        </header>
+
+        <button class="info-trigger" onclick="toggleModal(true)">💡 ¿Cómo funciona esto?</button>
+
+        <div class="card">
+            <label>Estado Deseado</label>
+            <select id="preset">
+                <option value="2">Delta (0.5-4 Hz) - Sueño profundo y sanación</option>
+                <option value="6">Theta (4-8 Hz) - Meditación y creatividad</option>
+                <option value="10" selected>Alpha (8-14 Hz) - Relajación y flujo</option>
+                <option value="20">Beta (14-30 Hz) - Concentración activa</option>
+                <option value="40">Gamma (30-100 Hz) - Procesamiento cognitivo alto</option>
+            </select>
+
+            <label>Frecuencia Base (Hz)</label>
+            <input type="number" id="baseFreq" value="200" min="100" max="1000">
+
+            <div class="controls">
+                <button class="play" onclick="play()">▶ Iniciar</button>
+                <button class="stop" onclick="stop()">⏹ Detener</button>
+                <button class="download" onclick="download()">⬇ Descargar Sesión (1 min)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <h2>Ciencia de las Ondas Binaurales</h2>
+            <p>Los pulsos binaurales ocurren cuando escuchamos dos frecuencias ligeramente diferentes en cada oído. El cerebro procesa la diferencia entre ambas, creando un tercer tono interno.</p>
+            
+            <div class="wave-item">
+                <b>Delta (0.5 - 4 Hz):</b> Asociadas al sueño profundo sin sueños. Ayudan en procesos de regeneración celular y descanso total. Ideales para el insomnio.
+            </div>
+            <div class="wave-item">
+                <b>Theta (4 - 8 Hz):</b> El estado de vigilia-sueño. Vinculadas a la memoria profunda, el aprendizaje y la meditación profunda. Reducen la ansiedad.
+            </div>
+            <div class="wave-item">
+                <b>Alpha (8 - 14 Hz):</b> El puente entre el consciente y el subconsciente. Ideal para el "estado de flujo", reduciendo el ruido mental sin causar somnolencia.
+            </div>
+            <div class="wave-item">
+                <b>Beta (14 - 30 Hz):</b> Estado de alerta normal. Útil para tareas que requieren atención externa, resolución de problemas y enfoque analítico.
+            </div>
+            <div class="wave-item">
+                <b>Gamma (30 - 100 Hz):</b> Las frecuencias más rápidas. Se relacionan con ráfagas de intuición, procesamiento de información compleja y alta concentración.
+            </div>
+
+            <button class="close-modal" onclick="toggleModal(false)">Entendido, vamos a probar</button>
+        </div>
+    </div>
+
+    <script>
+        let ctx, oscL, oscR;
+
+        function toggleModal(show) {
+            document.getElementById('infoModal').style.display = show ? 'block' : 'none';
+        }
+
+        function play() {
+            stop();
+            const diff = +document.getElementById("preset").value;
+            const base = +document.getElementById("baseFreq").value;
+
+            ctx = new (window.AudioContext || window.webkitAudioContext)();
+            oscL = ctx.createOscillator();
+            oscR = ctx.createOscillator();
+            const merger = ctx.createChannelMerger(2);
+
+            oscL.frequency.value = base;
+            oscR.frequency.value = base + diff;
+
+            oscL.connect(merger, 0, 0);
+            oscR.connect(merger, 0, 1);
+            merger.connect(ctx.destination);
+
+            oscL.start();
+            oscR.start();
+        }
+
+        function stop() {
+            if (oscL) { try { oscL.stop(); } catch(e){} }
+            if (oscR) { try { oscR.stop(); } catch(e){} }
+            if (ctx) ctx.close();
+        }
+
+        function download() {
+            const sampleRate = 44100;
+            const duration = 60;
+            const length = sampleRate * duration;
+            const diff = +document.getElementById("preset").value;
+            const base = +document.getElementById("baseFreq").value;
+
+            const buffer = new ArrayBuffer(44 + length * 4);
+            const view = new DataView(buffer);
+
+            function writeString(view, offset, str) {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset + i, str.charCodeAt(i));
+                }
+            }
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + length * 4, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 2, true); 
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 4, true);
+            view.setUint16(32, 4, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, length * 4, true);
+
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                let t = i / sampleRate;
+                let left = Math.sin(2 * Math.PI * base * t);
+                let right = Math.sin(2 * Math.PI * (base + diff) * t);
+                view.setInt16(offset, left * 32767, true);
+                offset += 2;
+                view.setInt16(offset, right * 32767, true);
+                offset += 2;
+            }
+
+            const blob = new Blob([view], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `binaural_${diff}Hz.wav`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
